@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
+    <title>Quản Lý Bãi Đỗ Xe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .parking-area {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .parking-lane {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin: 5px;
+            width: 30%;
+        }
+
+        .lane-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .spot {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+
+        .occupied {
+            background-color: #ff4d4d; /* đỏ */
+            color: white;
+        }
+
+        .empty {
+            background-color: #66ff66; /* xanh */
+            color: black;
+        }
+
+        .road {
+            width: 50px;
+            height: 100%;
+            background-color: #888;
+            margin: 0 10px;
+            border-radius: 10px;
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: space-between; /* Đặt các phần tử theo hàng */
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .form-container form {
+            margin-bottom: 20px;
+        }
+
+        .form-container button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+
+        .input-text {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            width: 260px;
+            margin-right: 10px;
+        }
+
+        .status-icon {
+            margin-left: 10px;
+            font-size: 1.5em;
+            color: #ff8c00;
+        }
+
+        @media screen and (max-width: 768px) {
+            .parking-lane {
+                width: 45%;
+            }
+            .road {
+                width: 35px;
+            }
+            .spot {
+                height: 90px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .parking-lane {
+                width: 100%;
+            }
+            .road {
+                width: 25px;
+            }
+            .spot {
+                height: 80px;
+            }
+            .form-container button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .input-text {
+                width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🚚 🚗 🚕 Quản Lý Bãi Đỗ Xe 🚚 🚗 🚕</h1>
+        <div class="parking-area">
+            <div class="parking-lane">
+                <div class="lane-title">⬅️ Vị trí bên trái</div>
+                <div class="spot {% if parking_spots.left[0] == 0 %}occupied{% else %}empty{% endif %}">
+                    {% if parking_spots.left[0] == 0 %}R1: Đã đỗ{% else %}R1: Trống{% endif %}
+                </div>
+                <div class="spot {% if parking_spots.left[1] == 0 %}occupied{% else %}empty{% endif %}">
+                    {% if parking_spots.left[1] == 0 %}R2: Đã đỗ{% else %}R2: Trống{% endif %}
+                </div>
+                <div class="spot {% if parking_spots.left[2] == 0 %}occupied{% else %}empty{% endif %}">
+                    {% if parking_spots.left[2] == 0 %}R3: Đã đỗ{% else %}R3: Trống{% endif %}
+                </div>
+            </div>
+
+            <div class="road"></div>
+
+            <div class="parking-lane">
+                <div class="lane-title">Vị trí bên phải ➡️</div>
+                <div class="spot {% if parking_spots.right[0] == 0 %}occupied{% else %}empty{% endif %}">
+                    {% if parking_spots.right[0] == 0 %}L1: Đã đỗ{% else %}L1: Trống{% endif %}
+                </div>
+                <div class="spot {% if parking_spots.right[1] == 0 %}occupied{% else %}empty{% endif %}">
+                    {% if parking_spots.right[1] == 0 %}L2: Đã đỗ{% else %}L2: Trống{% endif %}
+                </div>
+                <div class="spot {% if parking_spots.right[2] == 0 %}occupied{% else %}empty{% endif %}">
+                    {% if parking_spots.right[2] == 0 %}L3: Đã đỗ{% else %}L3: Trống{% endif %}
+                </div>
+            </div>
+        </div>
+        <h3> 🚪 Trạng Thái Cửa:
+            {% if servo_angle == 90 %}
+                Mở
+            {% else %}
+                Đóng
+            {% endif %}
+        <i class="fas fa-warehouse status-icon"></i></h3>
+        <div class="form-container">
+            <div>
+                <h2>🎛️ Điều khiển Cửa An Ninh</h2>
+                <form action="{{ url_for('control_servo') }}" method="post">
+                    <button type="submit" name="state" value="1">Mở cửa</button>
+                    <button type="submit" name="state" value="0">Đóng cửa</button>
+                </form>
+            </div>
+            <div>
+                <h2>📢 Hiển thị Thông Báo</h2>
+                <form action="{{ url_for('display_lcd') }}" method="post">
+                    <input type="text" name="text" class="input-text" placeholder="Nhập nội dung" required>
+                    <button type="submit">Hiển thị</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
